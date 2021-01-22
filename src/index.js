@@ -1,0 +1,74 @@
+import esbuild from 'esbuild';
+import postcss from 'postcss';
+import postcssrc from 'postcss-load-config';
+import fs from 'fs';
+import path from 'path';
+
+const pluginPostcssLiteral = (options = {}) => ({
+	name: 'postcss-literal',
+	setup(build, transform) {
+		const {
+			filter = /.*/,
+			namespace = '',
+			tag = 'css',
+			minify = false,
+			config = {}
+		} = options;
+		let warnings;
+
+		const parse = css => {
+			const result = esbuild.transformSync(css, {
+				loader: 'css',
+				minify
+			});
+
+			if (result.warnings.length) return (warnings = result.warnings);
+
+			return result.code;
+		};
+
+		const transformContents = ({ args, contents }) => {
+			const index = contents.indexOf(tag + '`');
+
+			if (index == -1) return { contents };
+
+			const start = index + tag.length + 1;
+			const end = contents.indexOf('`', start);
+			const css = contents.slice(start, end);
+			const from = path.relative(process.cwd(), args.path);
+
+			return postcssrc(config).then(({ plugins, options }) =>
+				postcss(plugins)
+					.process(css, { ...options, from })
+					.then(result => {
+						const css = parse(result.css);
+
+						if (warnings) return { warnings };
+
+						contents = contents.slice(0, start) + css + contents.slice(end);
+
+						result
+							.warnings()
+							.forEach(warn => process.stderr.write(warn.toString()));
+
+						return { contents };
+					})
+					.catch(error => {
+						if (error.name != 'CssSyntaxError') throw error;
+
+						process.stderr.write(error.message + error.showSourceCode());
+					})
+			);
+		};
+
+		if (transform) return transformContents(transform);
+
+		build.onLoad({ filter, namespace }, async args => {
+			const contents = await fs.promises.readFile(args.path, 'utf8');
+
+			return transformContents({ args, contents });
+		});
+	}
+});
+
+export default pluginPostcssLiteral;
