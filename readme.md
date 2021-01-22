@@ -14,6 +14,18 @@ npm install esbuild-plugin-postcss-literal --save-dev
 
 ### Use
 
+`button.css.js`
+
+```js
+const styles = css`
+    .button {
+        &.-primary {
+            background: var(--primary);
+        }
+    }
+`;
+```
+
 `esbuild.config.json`
 
 ```js
