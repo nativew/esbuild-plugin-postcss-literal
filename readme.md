@@ -71,7 +71,7 @@ postcssLiteral({
 
 ### Check
 
-[esbuild-plugin-merge](https://github.com/nativew/esbuild-plugin-merge) &nbsp; → &nbsp; Pipe esbuild plugins output.
+[esbuild-plugin-pipe](https://github.com/nativew/esbuild-plugin-pipe) &nbsp; → &nbsp; Pipe esbuild plugins output.
 
 [esbuild-plugin-babel](https://github.com/nativew/esbuild-plugin-babel) &nbsp; → &nbsp; Babel plugin for esbuild.
 
