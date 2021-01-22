@@ -74,7 +74,7 @@ postcssLiteral({
 ```json
 {
     "plugins": {
-        "postcss-plugin": {}
+        "postcss-nesting": {}
     }
 }
 ```
