@@ -4,7 +4,7 @@ import postcssrc from 'postcss-load-config';
 import fs from 'fs';
 import path from 'path';
 
-const pluginPostcssLiteral = (options = {}) => ({
+const pluginPostcssLiteral = (settings = {}) => ({
 	name: 'postcss-literal',
 	setup(build, transform) {
 		const {
@@ -13,7 +13,7 @@ const pluginPostcssLiteral = (options = {}) => ({
 			tag = 'css',
 			minify = false,
 			config = {}
-		} = options;
+		} = settings;
 		let warnings;
 
 		const parse = css => {
@@ -27,7 +27,7 @@ const pluginPostcssLiteral = (options = {}) => ({
 			return result.code;
 		};
 
-		const transformContents = ({ args, contents }) => {
+		const transformContents = async ({ args, contents }) => {
 			const index = contents.indexOf(tag + '`');
 
 			if (index == -1) return { contents };
@@ -36,29 +36,32 @@ const pluginPostcssLiteral = (options = {}) => ({
 			const end = contents.indexOf('`', start);
 			const css = contents.slice(start, end);
 			const from = path.relative(process.cwd(), args.path);
+			const configPlugins = config.plugins || [];
+			const loadConfig = await postcssrc()
+				.then(result => result)
+				.catch(() => ({ options: {}, plugins: [] }));
+			const { plugins, options } = loadConfig;
 
-			return postcssrc(config).then(({ plugins, options }) =>
-				postcss(plugins)
-					.process(css, { ...options, from })
-					.then(result => {
-						const css = parse(result.css);
+			return postcss([...configPlugins, ...plugins])
+				.process(css, { from, ...config, ...options })
+				.then(result => {
+					const css = parse(result.css);
 
-						if (warnings) return { warnings };
+					if (warnings) return { warnings };
 
-						contents = contents.slice(0, start) + css + contents.slice(end);
+					contents = contents.slice(0, start) + css + contents.slice(end);
 
-						result
-							.warnings()
-							.forEach(warn => process.stderr.write(warn.toString()));
+					result
+						.warnings()
+						.forEach(warn => process.stderr.write(warn.toString()));
 
-						return { contents };
-					})
-					.catch(error => {
-						if (error.name != 'CssSyntaxError') throw error;
+					return { contents };
+				})
+				.catch(error => {
+					if (error.name != 'CssSyntaxError') throw error;
 
-						process.stderr.write(error.message + error.showSourceCode());
-					})
-			);
+					process.stderr.write(error.message + error.showSourceCode());
+				});
 		};
 
 		if (transform) return transformContents(transform);
