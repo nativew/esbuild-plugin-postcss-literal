@@ -6,7 +6,7 @@ import path from 'path';
 
 const pluginPostcssLiteral = (settings = {}) => ({
 	name: 'postcss-literal',
-	setup(build, transform) {
+	setup(build, { transform } = {}) {
 		const {
 			filter = /.*/,
 			namespace = '',
