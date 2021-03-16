@@ -9,7 +9,7 @@
 ### Install
 
 ```zsh
-npm install esbuild-plugin-postcss-literal --save-dev
+npm install esbuild-plugin-postcss-literal -D
 ```
 
 <br>
@@ -90,5 +90,7 @@ postcssLiteral({
 [esbuild-plugin-pipe](https://github.com/nativew/esbuild-plugin-pipe) &nbsp; → &nbsp; Pipe esbuild plugins output.
 
 [esbuild-plugin-babel](https://github.com/nativew/esbuild-plugin-babel) &nbsp; → &nbsp; Babel plugin for esbuild.
+
+[esbuild-plugin-svg](https://github.com/nativew/esbuild-plugin-svg) &nbsp; → &nbsp; Svg files import plugin for esbuild.
 
 <br>
