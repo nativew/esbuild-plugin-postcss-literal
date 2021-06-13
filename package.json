@@ -1,6 +1,6 @@
 {
 	"name": "esbuild-plugin-postcss-literal",
-	"version": "0.2.1",
+	"version": "0.2.2",
 	"description": "PostCSS tagged template literals plugin for esbuild.",
 	"repository": "nativew/esbuild-plugin-postcss-literal",
 	"author": "Antoine Boulanger (https://github.com/antoineboulanger)",
