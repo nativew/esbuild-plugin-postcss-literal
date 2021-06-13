@@ -12,6 +12,7 @@ const pluginPostcssLiteral = (settings = {}) => ({
 			namespace = '',
 			tag = 'css',
 			minify = false,
+			loader = 'js',
 			config = {}
 		} = settings;
 		let warnings;
@@ -30,7 +31,7 @@ const pluginPostcssLiteral = (settings = {}) => ({
 		const transformContents = async ({ args, contents }) => {
 			const index = contents.indexOf(tag + '`');
 
-			if (index == -1) return { contents };
+			if (index == -1) return { contents, loader };
 
 			const start = index + tag.length + 1;
 			const end = contents.indexOf('`', start);
@@ -55,7 +56,7 @@ const pluginPostcssLiteral = (settings = {}) => ({
 						.warnings()
 						.forEach(warn => process.stderr.write(warn.toString()));
 
-					return { contents };
+					return { contents, loader };
 				})
 				.catch(error => {
 					if (error.name != 'CssSyntaxError') throw error;
