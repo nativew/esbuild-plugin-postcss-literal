@@ -24,7 +24,7 @@ const pluginPostcssLiteral = (settings = {}) => ({
 
 			if (result.warnings.length) return (warnings = result.warnings);
 
-			return result.code;
+			return result.code.replace(/([\\`])/g, "\\$&");
 		};
 
 		const transformContents = async ({ args, contents }) => {
