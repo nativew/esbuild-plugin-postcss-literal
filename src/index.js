@@ -22,7 +22,7 @@ const pluginPostcssLiteral = (settings = {}) => ({
 				minify
 			});
 
-			if (result.warnings.length) return (warnings = result.warnings);
+			if (result.warnings.length) warnings = result.warnings;
 
 			return result.code;
 		};
@@ -47,15 +47,13 @@ const pluginPostcssLiteral = (settings = {}) => ({
 				.then(result => {
 					const css = parse(result.css);
 
-					if (warnings) return { warnings };
-
 					contents = contents.slice(0, start) + css + contents.slice(end);
 
 					result
 						.warnings()
 						.forEach(warn => process.stderr.write(warn.toString()));
 
-					return { contents };
+					return { contents, warnings };
 				})
 				.catch(error => {
 					if (error.name != 'CssSyntaxError') throw error;
